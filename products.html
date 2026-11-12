@@ -679,51 +679,178 @@
     });
 
 
-    // INTERACTIVE LEAFLET MAP
 
-    // Approximate map center for Lipa City.
- const map = L.map('supplier-map').setView(
+// INTERACTIVE LEAFLET MAP
+
+// Center the map around Bulacnin and nearby areas of Lipa.
+const map = L.map('supplier-map').setView(
   [13.995374256756332, 121.13824664250862],
-  14
+  11
 );
 
-    // OpenStreetMap tiles
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+// OpenStreetMap tiles
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  maxZoom: 19,
+  attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+}).addTo(map);
 
+// Marker colors
+const markerColors = {
+  apiary: '#F59E0B',
+  market: '#059669',
+  supermarket: '#2563EB'
+};
 
-    // Golden Clover Honey Bee Farm
-    // This is an approximate area marker, NOT a verified farm entrance.
-    const goldenClover = L.marker([13.941, 121.163]).addTo(map);
+// Add a small colored marker
+function addSmallMarker(lat, lng, name, type, description, link) {
+  const marker = L.circleMarker([lat, lng], {
+    radius: 7,
+    color: '#ffffff',
+    weight: 2,
+    fillColor: markerColors[type],
+    fillOpacity: 1
+  }).addTo(map);
 
-    goldenClover.bindPopup(`
-      <div style="min-width:190px">
-        <strong style="color:#1A1A40;font-size:14px">
-          Golden Clover Honey Bee Farm
-        </strong>
-        <p style="margin:7px 0;color:#64748b;font-size:12px">
-          Bulacnin, Lipa City, Batangas
-        </p>
-        <span style="background:#FFF3C4;color:#1A1A40;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:bold">
-          Beeswax source
-        </span>
-        <p style="margin:9px 0 0;font-size:11px;color:#64748b">
-          Approximate area marker. Confirm the exact location with the farm.
-        </p>
-        <a
-          href="https://www.google.com/maps/search/?api=1&query=Golden+Clover+Honey+Bee+Farm+Bulacnin+Lipa+Batangas"
-          target="_blank"
-          rel="noopener noreferrer"
-          style="display:inline-block;margin-top:9px;color:#1A1A40;font-weight:bold;font-size:12px">
-          Find farm on Google Maps ↗
-        </a>
-      </div>
-    `);
+  marker.bindPopup(`
+    <div style="min-width:180px">
+      <strong style="color:#1A1A40;font-size:14px">${name}</strong>
+      <p style="margin:6px 0;color:#64748b;font-size:12px">
+        ${description}
+      </p>
+      <a href="${link}" target="_blank" rel="noopener noreferrer"
+         style="color:#1A1A40;font-size:12px;font-weight:bold">
+        View location ↗
+      </a>
+    </div>
+  `);
 
-    // Open the supplier popup when the page loads.
-    goldenClover.openPopup();
+  return marker;
+}
+
+// Exact Golden Clover coordinates supplied by you
+const goldenClover = addSmallMarker(
+  13.995374256756332,
+  121.13824664250862,
+  'Golden Clover Honey Bee Farm',
+  'apiary',
+  'Our identified beeswax source. Bulacnin, Lipa City, Batangas.',
+  'https://www.google.com/maps/search/?api=1&query=13.995374256756332,121.13824664250862'
+);
+
+// Other locations will be searched using their names and addresses.
+// This avoids guessing their coordinates.
+async function addSearchedMarker(place) {
+  try {
+    const url = new URL('https://nominatim.openstreetmap.org/search');
+
+    url.searchParams.set('q', place.query);
+    url.searchParams.set('format', 'jsonv2');
+    url.searchParams.set('limit', '1');
+    url.searchParams.set('countrycodes', 'ph');
+
+    const response = await fetch(url);
+    if (!response.ok) throw new Error('Location search failed');
+
+    const results = await response.json();
+
+    if (!results.length) {
+      console.warn('Location not found:', place.name);
+      return;
+    }
+
+    const location = results[0];
+
+    addSmallMarker(
+      Number(location.lat),
+      Number(location.lon),
+      place.name,
+      place.type,
+      place.description,
+      'https://www.google.com/maps/search/?api=1&query=' +
+        encodeURIComponent(place.query)
+    );
+
+  } catch (error) {
+    console.error('Could not load:', place.name, error);
+  }
+}
+
+// Other bee farms and apiaries
+const apiaries = [
+  {
+    name: 'Honey House HoneyBee Farm',
+    type: 'apiary',
+    description: 'Bee farm in Bulacnin, Lipa City.',
+    query: 'Honey House HoneyBee Farm, Bulacnin, Lipa City, Batangas, Philippines'
+  },
+  {
+    name: "Queen's Honey Bee Farm",
+    type: 'apiary',
+    description: 'Local honey bee farm in Lipa City.',
+    query: "Queen's Honey Bee Farm, Leviste Highway, Lipa City, Batangas, Philippines"
+  },
+  {
+    name: "Pia's Bee Farm",
+    type: 'apiary',
+    description: 'Bee farm in San Salvador, Lipa City.',
+    query: "Pia's Bee Farm, San Salvador, Lipa City, Batangas, Philippines"
+  },
+  {
+    name: 'Richbee Honeybee Farm',
+    type: 'apiary',
+    description: 'Local honeybee farm in Lipa City.',
+    query: 'Richbee Honeybee Farm, Leviste Highway, Lipa City, Batangas, Philippines'
+  },
+  {
+    name: 'Milea Bee Farm',
+    type: 'apiary',
+    description: 'Bee farm in Balagtasin, San Jose, Batangas.',
+    query: 'Milea Bee Farm, Kurba Road, Balagtasin, San Jose, Batangas, Philippines'
+  }
+];
+
+// Local markets and supermarkets
+const shoppingPlaces = [
+  {
+    name: 'Lipa City Public Market',
+    type: 'market',
+    description: 'Public market where visitors can explore local vendors.',
+    query: 'Lipa City Public Market, E Mayo Street, Lipa City, Batangas, Philippines'
+  },
+  {
+    name: "Southern's Twin Supermart 2",
+    type: 'supermarket',
+    description: 'Supermarket in Lipa City.',
+    query: "Southern's Twin Supermart 2, Esteban Mayo Street, Lipa City, Batangas, Philippines"
+  },
+  {
+    name: 'SM Supermarket',
+    type: 'supermarket',
+    description: 'Supermarket at SM City Lipa.',
+    query: 'SM Supermarket, SM City Lipa, Batangas, Philippines'
+  },
+  {
+    name: 'Robinsons Supermarket Lipa',
+    type: 'supermarket',
+    description: 'Supermarket at Robinsons Place Lipa.',
+    query: 'Robinsons Supermarket, Robinsons Place Lipa, Batangas, Philippines'
+  }
+];
+
+// Load locations one at a time to avoid overloading the map search service.
+async function loadLocations() {
+  const locations = [...apiaries, ...shoppingPlaces];
+
+  for (const place of locations) {
+    await addSearchedMarker(place);
+    await new Promise(resolve => setTimeout(resolve, 1100));
+  }
+}
+
+loadLocations();
+
+// Open Golden Clover's popup when the map loads.
+goldenClover.openPopup();
 
   </script>
 
