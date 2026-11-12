@@ -857,7 +857,7 @@ const apiaries = [
 
 
 // =====================================
-// PUBLIC MARKETS AND SUPERMARKETS
+// PUBLIC MARKETS 
 // =====================================
 
 const shoppingPlaces = [
@@ -889,6 +889,15 @@ const shoppingPlaces = [
     lat: 13.94349580518687,
     lng: 121.16114681829757
   }
+];
+
+  // =====================================
+// SUPERMARKETS
+// BLUE CIRCLE MARKERS
+// =====================================
+
+const supermarkets = [
+  // We will add your supermarket locations here.
 ];
 
 // =====================================
@@ -1034,49 +1043,64 @@ async function addSearchedMarker(place) {
 // =====================================
 
 // =====================================
+// =====================================
 // LOAD ALL LOCATIONS
 // =====================================
 
 async function loadLocations() {
 
-  // FIRST: Add all bee farms using their
-  // existing latitude and longitude.
-  apiaries.forEach(place => {
-
+  // FIRST: Load all bee farms (yellow)
+  for (const place of apiaries) {
     addSmallMarker(
       place.lat,
       place.lng,
       place.name,
       place.type,
       place.description,
-      'https://www.google.com/maps/search/?api=1&query=' +
-        encodeURIComponent(place.lat + ',' + place.lng)
+      `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`
     );
+  }
 
-    console.log('YELLOW MARKER ADDED:', place.name);
+  // SECOND: Load public markets (green)
+  // and supermarkets (blue)
+  const places = [...shoppingPlaces, ...supermarkets];
 
-  });
+  for (const place of places) {
 
-  // SECOND: Search for public markets
-  // and supermarkets using their query.
-  for (const place of shoppingPlaces) {
+    // Use fixed coordinates when available
+    if (
+      Number.isFinite(place.lat) &&
+      Number.isFinite(place.lng)
+    ) {
+      addSmallMarker(
+        place.lat,
+        place.lng,
+        place.name,
+        place.type,
+        place.description,
+        `https://www.google.com/maps/search/?api=1&query=${place.lat},${place.lng}`
+      );
 
-    await addSearchedMarker(place);
+      console.log('MARKER ADDED:', place.name);
 
-    // Delay between geocoding requests
-    await new Promise(resolve =>
-      setTimeout(resolve, 1200)
-    );
+    } else if (place.query) {
 
+      // Otherwise, search for the location
+      await addSearchedMarker(place);
+
+      await new Promise(resolve =>
+        setTimeout(resolve, 1200)
+      );
+
+    } else {
+      console.warn('NO LOCATION DATA:', place.name);
+    }
   }
 
   console.log('ALL LOCATION MARKERS LOADED');
-
 }
 
-// Start loading markers
 loadLocations();
-
   
 // Automatically open Golden Clover's popup
 goldenClover.openPopup();
