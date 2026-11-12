@@ -694,14 +694,54 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
 }).addTo(map);
 
-// Marker colors
+// Marker colors for OTHER locations
 const markerColors = {
-  apiary: '#F59E0B',
-  market: '#059669',
-  supermarket: '#2563EB'
+  apiary: '#F59E0B',      // Yellow - Other apiaries
+  market: '#059669',      // Green - Public markets
+  supermarket: '#2563EB' // Blue - Supermarkets
 };
 
-// Add a small colored marker
+// =====================================
+// SPECIAL RED LOCATION PIN
+// GOLDEN CLOVER HONEY BEE FARM
+// =====================================
+
+const goldenCloverIcon = L.icon({
+  iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png',
+  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
+});
+
+const goldenClover = L.marker(
+  [13.995374256756332, 121.13824664250862],
+  { icon: goldenCloverIcon }
+).addTo(map);
+
+goldenClover.bindPopup(`
+  <div style="min-width:180px">
+    <strong style="color:#1A1A40;font-size:14px">
+      Golden Clover Honey Bee Farm
+    </strong>
+    <p style="margin:6px 0;color:#64748b;font-size:12px">
+      Our identified beeswax source. Bulacnin, Lipa City, Batangas.
+    </p>
+    <a href="https://www.google.com/maps/search/?api=1&query=13.995374256756332,121.13824664250862"
+       target="_blank"
+       rel="noopener noreferrer"
+       style="color:#1A1A40;font-size:12px;font-weight:bold">
+      View location ↗
+    </a>
+  </div>
+`);
+
+// =====================================
+// COLORED CIRCLE MARKERS
+// FOR ALL OTHER LOCATIONS
+// =====================================
+
 function addSmallMarker(lat, lng, name, type, description, link) {
   const marker = L.circleMarker([lat, lng], {
     radius: 7,
@@ -727,55 +767,11 @@ function addSmallMarker(lat, lng, name, type, description, link) {
   return marker;
 }
 
-// Exact Golden Clover coordinates supplied by you
-const goldenClover = addSmallMarker(
-  13.995374256756332,
-  121.13824664250862,
-  'Golden Clover Honey Bee Farm',
-  'apiary',
-  'Our identified beeswax source. Bulacnin, Lipa City, Batangas.',
-  'https://www.google.com/maps/search/?api=1&query=13.995374256756332,121.13824664250862'
-);
+// =====================================
+// OTHER BEE FARMS AND APIARIES
+// YELLOW CIRCLES
+// =====================================
 
-// Other locations will be searched using their names and addresses.
-// This avoids guessing their coordinates.
-async function addSearchedMarker(place) {
-  try {
-    const url = new URL('https://nominatim.openstreetmap.org/search');
-
-    url.searchParams.set('q', place.query);
-    url.searchParams.set('format', 'jsonv2');
-    url.searchParams.set('limit', '1');
-    url.searchParams.set('countrycodes', 'ph');
-
-    const response = await fetch(url);
-    if (!response.ok) throw new Error('Location search failed');
-
-    const results = await response.json();
-
-    if (!results.length) {
-      console.warn('Location not found:', place.name);
-      return;
-    }
-
-    const location = results[0];
-
-    addSmallMarker(
-      Number(location.lat),
-      Number(location.lon),
-      place.name,
-      place.type,
-      place.description,
-      'https://www.google.com/maps/search/?api=1&query=' +
-        encodeURIComponent(place.query)
-    );
-
-  } catch (error) {
-    console.error('Could not load:', place.name, error);
-  }
-}
-
-// Other bee farms and apiaries
 const apiaries = [
   {
     name: 'Honey House HoneyBee Farm',
@@ -809,7 +805,10 @@ const apiaries = [
   }
 ];
 
-// Local markets and supermarkets
+// =====================================
+// LOCAL MARKETS AND SUPERMARKETS
+// =====================================
+
 const shoppingPlaces = [
   {
     name: 'Lipa City Public Market',
@@ -837,7 +836,53 @@ const shoppingPlaces = [
   }
 ];
 
-// Load locations one at a time to avoid overloading the map search service.
+// =====================================
+// SEARCH AND ADD OTHER LOCATIONS
+// =====================================
+
+async function addSearchedMarker(place) {
+  try {
+    const url = new URL('https://nominatim.openstreetmap.org/search');
+
+    url.searchParams.set('q', place.query);
+    url.searchParams.set('format', 'jsonv2');
+    url.searchParams.set('limit', '1');
+    url.searchParams.set('countrycodes', 'ph');
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error('Location search failed');
+    }
+
+    const results = await response.json();
+
+    if (!results.length) {
+      console.warn('Location not found:', place.name);
+      return;
+    }
+
+    const location = results[0];
+
+    addSmallMarker(
+      Number(location.lat),
+      Number(location.lon),
+      place.name,
+      place.type,
+      place.description,
+      'https://www.google.com/maps/search/?api=1&query=' +
+        encodeURIComponent(place.query)
+    );
+
+  } catch (error) {
+    console.error('Could not load:', place.name, error);
+  }
+}
+
+// =====================================
+// LOAD ALL OTHER LOCATIONS
+// =====================================
+
 async function loadLocations() {
   const locations = [...apiaries, ...shoppingPlaces];
 
@@ -849,8 +894,9 @@ async function loadLocations() {
 
 loadLocations();
 
-// Open Golden Clover's popup when the map loads.
+// Automatically open Golden Clover's popup
 goldenClover.openPopup();
+
 
   </script>
 
