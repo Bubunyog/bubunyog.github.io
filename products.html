@@ -511,114 +511,54 @@
     </section>
 
 
-    <!-- INTERACTIVE MAP -->
-    <section id="sources" class="bg-bubun-cream px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
-      <div class="mx-auto max-w-7xl">
+   
+<!-- INTERACTIVE MAP -->
+<section id="sources" class="bg-bubun-cream px-4 py-16 sm:px-6 sm:py-20 lg:px-8">
+  <div class="mx-auto max-w-7xl">
 
-        <div class="mx-auto max-w-3xl text-center">
-          <p class="text-xs font-extrabold uppercase tracking-[.22em] text-bubun-amber">
-            Explore our community
-          </p>
+    <div class="mx-auto max-w-3xl text-center">
+      <p class="text-xs font-extrabold uppercase tracking-[.22em] text-bubun-amber">
+        Explore our community
+      </p>
+      <h2 class="brand-font mt-3 text-3xl font-extrabold text-bubun-navy sm:text-4xl">
+        Local Sources &amp; Markets
+      </h2>
+      <p class="mt-4 leading-7 text-slate-600">
+        Discover bee farms, local markets, and supermarkets around Lipa City
+        that are worth exploring as potential sources of materials.
+      </p>
+    </div>
 
-          <h2 class="brand-font mt-3 text-3xl font-extrabold text-bubun-navy sm:text-4xl">
-            Find Local Sources
-          </h2>
+    <!-- MAP LEGEND -->
+    <div class="mt-8 flex flex-wrap justify-center gap-4 text-xs font-bold text-bubun-navy">
+      <span class="flex items-center gap-2">
+        <span class="h-3 w-3 rounded-full bg-amber-500"></span> Bee farms
+      </span>
+      <span class="flex items-center gap-2">
+        <span class="h-3 w-3 rounded-full bg-emerald-600"></span> Public markets
+      </span>
+      <span class="flex items-center gap-2">
+        <span class="h-3 w-3 rounded-full bg-blue-600"></span> Supermarkets
+      </span>
+    </div>
 
-          <p class="mt-4 leading-7 text-slate-600">
-            Explore the area around Lipa City and discover the local businesses
-            and suppliers connected to our materials.
-          </p>
-        </div>
-
-
-        <!-- MAP LEGEND -->
-        <div class="mt-8 flex flex-wrap justify-center gap-3">
-          <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-bubun-navy shadow-sm">
-            <span class="h-3 w-3 rounded-full bg-amber-500"></span>
-            Bee farm
-          </span>
-
-          <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-bubun-navy shadow-sm">
-            <span class="h-3 w-3 rounded-full bg-emerald-600"></span>
-            Local market
-          </span>
-
-          <span class="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-xs font-bold text-bubun-navy shadow-sm">
-            <span class="h-3 w-3 rounded-full bg-blue-600"></span>
-            Supermarket
-          </span>
-        </div>
-
-
-        <!-- MAP -->
-        <div class="mt-7 overflow-hidden rounded-3xl border border-amber-100 bg-white p-2 shadow-warm">
-          <div id="supplier-map" aria-label="Interactive map of local ingredient sources"></div>
-        </div>
-
-
-        <div class="mt-6 grid gap-5 md:grid-cols-2">
-
-          <article class="rounded-2xl border border-amber-100 bg-white p-6">
-            <div class="flex items-start gap-3">
-              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-bubun-honey/40 text-bubun-navy">
-                <i data-lucide="map-pin" class="h-5 w-5"></i>
-              </div>
-
-              <div>
-                <h3 class="brand-font font-extrabold text-bubun-navy">
-                  Golden Clover Honey Bee Farm
-                </h3>
-                <p class="mt-1 text-sm text-slate-500">
-                  Bulacnin, Lipa City, Batangas
-                </p>
-                <p class="mt-3 text-sm leading-6 text-slate-600">
-                  Our identified beeswax source. Contact the farm to confirm
-                  current product availability and visiting arrangements.
-                </p>
-                <a
-                  href="https://www.google.com/maps/search/?api=1&query=Golden+Clover+Honey+Bee+Farm+Bulacnin+Lipa+Batangas"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="mt-3 inline-flex items-center gap-2 text-sm font-extrabold text-bubun-navy underline decoration-bubun-honey decoration-2 underline-offset-4">
-                  Open in Google Maps
-                  <i data-lucide="external-link" class="h-4 w-4"></i>
-                </a>
-              </div>
-            </div>
-          </article>
-
-
-          <article class="rounded-2xl border border-dashed border-amber-300 bg-white/80 p-6">
-            <div class="flex items-start gap-3">
-              <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-bubun-cream text-bubun-navy">
-                <i data-lucide="store" class="h-5 w-5"></i>
-              </div>
-
-              <div>
-                <h3 class="brand-font font-extrabold text-bubun-navy">
-                  More local sources coming soon
-                </h3>
-                <p class="mt-1 text-sm text-slate-500">
-                  Markets, fabric shops, and supermarkets
-                </p>
-                <p class="mt-3 text-sm leading-6 text-slate-600">
-                  We plan to expand this map as we identify and verify more
-                  local places where materials such as coconut oil, rosin,
-                  and cloth can be obtained.
-                </p>
-              </div>
-            </div>
-          </article>
-
-        </div>
-
-        <p class="mt-6 text-center text-xs leading-6 text-slate-500">
-          Map data © OpenStreetMap contributors. Locations should be confirmed
-          with the respective businesses before visiting.
-        </p>
-
+    <!-- MAP -->
+    <div class="mt-7 overflow-hidden rounded-3xl border border-amber-100 bg-white p-2 shadow-warm">
+      <div id="supplier-map"
+           style="height: 480px; width: 100%; border-radius: 18px;"
+           aria-label="Interactive map of bee farms and shopping locations in Lipa City">
       </div>
-    </section>
+    </div>
+
+    <p class="mt-5 text-center text-xs leading-6 text-slate-500">
+      Locations are provided as a guide. Please verify business details and
+      material availability directly with each establishment.
+      Map data © OpenStreetMap contributors.
+    </p>
+
+  </div>
+</section>
+
 
 
     <!-- CLOSING SECTION -->
