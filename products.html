@@ -768,6 +768,8 @@ function addSmallMarker(lat, lng, name, type, description, link) {
 }
 
 // =====================================
+
+// =====================================
 // OTHER BEE FARMS AND APIARIES
 // YELLOW CIRCLES
 // =====================================
@@ -777,19 +779,19 @@ const apiaries = [
     name: 'Honey House HoneyBee Farm',
     type: 'apiary',
     description: 'Bee farm in Bulacnin, Lipa City.',
-    query: 'Honey House HoneyBee Farm, Bulacnin, Lipa City, Batangas, Philippines'
+    query: 'Honey House Honey Bee Farm, 547 Purok 4, Leviste Highway, Bulacnin, Lipa City, Batangas, Philippines'
   },
   {
     name: "Queen's Honey Bee Farm",
     type: 'apiary',
     description: 'Local honey bee farm in Lipa City.',
-    query: "Queen's Honey Bee Farm, Leviste Highway, Lipa City, Batangas, Philippines"
+    query: "Queen's Honey Bee Farm, 426 Leviste Highway, Lipa City, Batangas, Philippines"
   },
   {
     name: "Pia's Bee Farm",
     type: 'apiary',
     description: 'Bee farm in San Salvador, Lipa City.',
-    query: "Pia's Bee Farm, San Salvador, Lipa City, Batangas, Philippines"
+    query: "Pia's Bee Farm, Zone 2 Tangway, San Salvador, Lipa City, Batangas, Philippines"
   },
   {
     name: 'Richbee Honeybee Farm',
@@ -806,14 +808,14 @@ const apiaries = [
 ];
 
 // =====================================
-// LOCAL MARKETS AND SUPERMARKETS
+// PUBLIC MARKETS AND SUPERMARKETS
 // =====================================
 
 const shoppingPlaces = [
   {
     name: 'Lipa City Public Market',
     type: 'market',
-    description: 'Public market where visitors can explore local vendors.',
+    description: 'Public market in Lipa City.',
     query: 'Lipa City Public Market, E Mayo Street, Lipa City, Batangas, Philippines'
   },
   {
@@ -826,47 +828,131 @@ const shoppingPlaces = [
     name: 'SM Supermarket',
     type: 'supermarket',
     description: 'Supermarket at SM City Lipa.',
-    query: 'SM Supermarket, SM City Lipa, Batangas, Philippines'
+    query: 'SM Supermarket, SM City Lipa, Ayala Highway, Lipa City, Batangas, Philippines'
   },
   {
     name: 'Robinsons Supermarket Lipa',
     type: 'supermarket',
     description: 'Supermarket at Robinsons Place Lipa.',
-    query: 'Robinsons Supermarket, Robinsons Place Lipa, Batangas, Philippines'
+    query: 'Robinsons Supermarket, Robinsons Place Lipa, President Jose P Laurel Highway, Lipa City, Batangas, Philippines'
   }
 ];
 
 // =====================================
-// SEARCH AND ADD OTHER LOCATIONS
+// CHECK IF LOCATION IS WITHIN LIPA AREA
 // =====================================
 
-async function addSearchedMarker(place) {
-  try {
-    const url = new URL('https://nominatim.openstreetmap.org/search');
+function isWithinLipa(lat, lng) {
+  return (
+    lat >= 13.85 &&
+    lat <= 14.10 &&
+    lng >= 121.05 &&
+    lng <= 121.25
+  );
+}
 
-    url.searchParams.set('q', place.query);
+// =====================================
+// LOCATION SEARCH WITH BACKUP SERVICE
+// =====================================
+
+async function searchLocation(query) {
+
+  // FIRST: OpenStreetMap Nominatim
+  try {
+    const url = new URL(
+      'https://nominatim.openstreetmap.org/search'
+    );
+
+    url.searchParams.set('q', query);
     url.searchParams.set('format', 'jsonv2');
     url.searchParams.set('limit', '1');
     url.searchParams.set('countrycodes', 'ph');
 
+    // Restrict search results to Lipa and nearby areas
+    url.searchParams.set(
+      'viewbox',
+      '121.05,14.10,121.25,13.85'
+    );
+    url.searchParams.set('bounded', '1');
+
     const response = await fetch(url);
 
     if (!response.ok) {
-      throw new Error('Location search failed');
+      throw new Error('Nominatim request failed');
     }
 
     const results = await response.json();
 
-    if (!results.length) {
-      console.warn('Location not found:', place.name);
+    if (results.length > 0) {
+      const lat = Number(results[0].lat);
+      const lng = Number(results[0].lon);
+
+      if (isWithinLipa(lat, lng)) {
+        return { lat, lng };
+      }
+    }
+
+  } catch (error) {
+    console.warn('Nominatim unavailable:', error);
+  }
+
+  // SECOND: Photon backup geocoder
+  try {
+    const url = new URL(
+      'https://photon.komoot.io/api/'
+    );
+
+    url.searchParams.set('q', query);
+    url.searchParams.set('limit', '5');
+    url.searchParams.set('lat', '13.995374');
+    url.searchParams.set('lon', '121.138247');
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      throw new Error('Photon request failed');
+    }
+
+    const data = await response.json();
+
+    for (const feature of data.features || []) {
+      const [lng, lat] = feature.geometry.coordinates;
+
+      if (isWithinLipa(lat, lng)) {
+        return { lat, lng };
+      }
+    }
+
+  } catch (error) {
+    console.warn('Photon unavailable:', error);
+  }
+
+  return null;
+}
+
+// =====================================
+// ADD COLORED CIRCLE MARKERS
+// =====================================
+
+async function addSearchedMarker(place) {
+
+  try {
+
+    const location = await searchLocation(place.query);
+
+    if (!location) {
+      console.warn(
+        'LOCATION NOT FOUND:',
+        place.name,
+        place.query
+      );
       return;
     }
 
-    const location = results[0];
-
+    // Add the appropriate colored circle
     addSmallMarker(
-      Number(location.lat),
-      Number(location.lon),
+      location.lat,
+      location.lng,
       place.name,
       place.type,
       place.description,
@@ -874,25 +960,53 @@ async function addSearchedMarker(place) {
         encodeURIComponent(place.query)
     );
 
+    console.log(
+      'MARKER ADDED:',
+      place.name,
+      location.lat,
+      location.lng
+    );
+
   } catch (error) {
-    console.error('Could not load:', place.name, error);
+
+    console.error(
+      'COULD NOT ADD MARKER:',
+      place.name,
+      error
+    );
+
   }
 }
 
 // =====================================
-// LOAD ALL OTHER LOCATIONS
+// LOAD ALL LOCATIONS
 // =====================================
 
 async function loadLocations() {
-  const locations = [...apiaries, ...shoppingPlaces];
+
+  const locations = [
+    ...apiaries,
+    ...shoppingPlaces
+  ];
 
   for (const place of locations) {
+
     await addSearchedMarker(place);
-    await new Promise(resolve => setTimeout(resolve, 1100));
+
+    // Delay between requests
+    await new Promise(resolve =>
+      setTimeout(resolve, 1200)
+    );
+
   }
+
+  console.log('ALL LOCATION SEARCHES COMPLETED');
+
 }
 
+// Start loading markers
 loadLocations();
+
 
 // Automatically open Golden Clover's popup
 goldenClover.openPopup();
