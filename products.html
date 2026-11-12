@@ -1028,28 +1028,45 @@ async function addSearchedMarker(place) {
 }
 
 // =====================================
+
+// =====================================
 // LOAD ALL LOCATIONS
 // =====================================
 
 async function loadLocations() {
 
-  const locations = [
-    ...apiaries,
-    ...shoppingPlaces
-  ];
+  // FIRST: Add all bee farms using their
+  // existing latitude and longitude.
+  apiaries.forEach(place => {
 
-  for (const place of locations) {
+    addSmallMarker(
+      place.lat,
+      place.lng,
+      place.name,
+      place.type,
+      place.description,
+      'https://www.google.com/maps/search/?api=1&query=' +
+        encodeURIComponent(place.lat + ',' + place.lng)
+    );
+
+    console.log('YELLOW MARKER ADDED:', place.name);
+
+  });
+
+  // SECOND: Search for public markets
+  // and supermarkets using their query.
+  for (const place of shoppingPlaces) {
 
     await addSearchedMarker(place);
 
-    // Delay between requests
+    // Delay between geocoding requests
     await new Promise(resolve =>
       setTimeout(resolve, 1200)
     );
 
   }
 
-  console.log('ALL LOCATION SEARCHES COMPLETED');
+  console.log('ALL LOCATION MARKERS LOADED');
 
 }
 
