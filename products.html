@@ -774,38 +774,87 @@ function addSmallMarker(lat, lng, name, type, description, link) {
 // YELLOW CIRCLES
 // =====================================
 
+
 const apiaries = [
   {
-    name: 'Honey House HoneyBee Farm',
+    name: 'Batangas Wild Raw Honey',
     type: 'apiary',
-    description: 'Bee farm in Bulacnin, Lipa City.',
-    query: 'Honey House Honey Bee Farm, 547 Purok 4, Leviste Highway, Bulacnin, Lipa City, Batangas, Philippines'
+    description: 'Local honey producer in Batangas.',
+    lat: 14.006223065847959,
+    lng: 121.13019626586309
   },
   {
-    name: "Queen's Honey Bee Farm",
+    name: "King Bee's Honey Farm",
     type: 'apiary',
-    description: 'Local honey bee farm in Lipa City.',
-    query: "Queen's Honey Bee Farm, 426 Leviste Highway, Lipa City, Batangas, Philippines"
+    description: 'Local honey bee farm near Bulacnin, Lipa City.',
+    lat: 14.004302342209003,
+    lng: 121.13180490925997
+  },
+  {
+    name: 'Honey House Bee Farm',
+    type: 'apiary',
+    description: 'Honey bee farm in Bulacnin, Lipa City.',
+    lat: 13.995294009062723,
+    lng: 121.13811508833172
+  },
+  {
+    name: 'Richbee Honey Farm',
+    type: 'apiary',
+    description: 'Honey bee farm in Lipa City.',
+    lat: 13.99421895462712,
+    lng: 121.1384104465954
+  },
+  {
+    name: 'Honey Lover Bee Farm',
+    type: 'apiary',
+    description: 'Honey bee farm in Lipa City.',
+    lat: 13.992678858110839,
+    lng: 121.13899589051755
+  },
+  {
+    name: 'Dronebees Honey Bee Farm',
+    type: 'apiary',
+    description: 'Honey bee farm in Lipa City.',
+    lat: 13.992125536995502,
+    lng: 121.13931076295441
+  },
+  {
+    name: "Rosalina's Honey Bee",
+    type: 'apiary',
+    description: 'Local honey bee farm near Bulacnin, Lipa City.',
+    lat: 14.010249337088187,
+    lng: 121.12773635804693
+  },
+  {
+    name: "The Bee's Honey",
+    type: 'apiary',
+    description: 'Local honey bee source in Lipa City.',
+    lat: 13.993354428692461,
+    lng: 121.13892607162643
+  },
+  {
+    name: "Bernie's Farm",
+    type: 'apiary',
+    description: 'Local bee farm in Lipa City.',
+    lat: 13.98340441851294,
+    lng: 121.12892013214704
   },
   {
     name: "Pia's Bee Farm",
     type: 'apiary',
     description: 'Bee farm in San Salvador, Lipa City.',
-    query: "Pia's Bee Farm, Zone 2 Tangway, San Salvador, Lipa City, Batangas, Philippines"
+    lat: 13.964487209409874,
+    lng: 121.12486002245907
   },
   {
-    name: 'Richbee Honeybee Farm',
+    name: 'Jimelyn Honey Bee Farm',
     type: 'apiary',
-    description: 'Local honeybee farm in Lipa City.',
-    query: 'Richbee Honeybee Farm, Leviste Highway, Lipa City, Batangas, Philippines'
-  },
-  {
-    name: 'Milea Bee Farm',
-    type: 'apiary',
-    description: 'Bee farm in Balagtasin, San Jose, Batangas.',
-    query: 'Milea Bee Farm, Kurba Road, Balagtasin, San Jose, Batangas, Philippines'
+    description: 'Honey bee farm in Mataas na Kahoy, Batangas.',
+    lat: 13.952586016801005,
+    lng: 121.11729238384115
   }
 ];
+
 
 // =====================================
 // PUBLIC MARKETS AND SUPERMARKETS
@@ -1007,7 +1056,7 @@ async function loadLocations() {
 // Start loading markers
 loadLocations();
 
-
+  
 // Automatically open Golden Clover's popup
 goldenClover.openPopup();
 
